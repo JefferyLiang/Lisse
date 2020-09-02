@@ -46,8 +46,7 @@ class LisseApp extends const_1.Base {
     }
     listen(port = 3000) {
         this._logger("application listen prot", port);
-        this._app.listen(port);
-        return this;
+        return this._app.listen(port);
     }
     useBeforeRoutesInject(middleware) {
         this._app.use(middleware);

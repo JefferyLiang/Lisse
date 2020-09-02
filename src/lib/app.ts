@@ -9,6 +9,7 @@ interface LissAppOption {
   viewPaths: string[];
   servicePaths: string[];
   apiLogger?: boolean;
+  timeout?: number;
 }
 
 export class LisseApp extends Base {
@@ -66,8 +67,7 @@ export class LisseApp extends Base {
 
   public listen(port: number = 3000) {
     this._logger("application listen prot", port);
-    this._app.listen(port);
-    return this;
+    return this._app.listen(port);
   }
 
   public useBeforeRoutesInject(middleware: Koa.Middleware) {
