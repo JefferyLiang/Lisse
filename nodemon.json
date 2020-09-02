@@ -1,0 +1,10 @@
+{
+  "restartable": "rs",
+  "ignore": ["node_modules", ".git"],
+  "verbose": true,
+  "exec": "ts-node example/index.ts",
+  "watch": ["demo", "src"],
+  "env": {
+    "DEBUG": "lisse:*"
+  }
+}

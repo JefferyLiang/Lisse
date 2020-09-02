@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "baseUrl": "./",
+    "charset": "utf8",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "lib": ["ESNext"],
+    "newLine": "lf",
+    "types": ["node"],
+    "moduleResolution": "Node",
+    "outDir": "build",
+    "paths": {
+      "@koa/router": ["koa__router"]
+    }
+  },
+  "include": ["./src/*.ts"],
+  "exclude": ["./src/node_modules"]
+}
