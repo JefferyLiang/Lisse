@@ -19,16 +19,20 @@ class Injector {
 
   public injectAndBuildInstance<T>(target: Constructor<T>): T {
     let injectServices = Reflect.getMetadata(LISSE_INJECTABLE, target);
-    const args = injectServices.map((name: string) => {
-      if (this._resources.has(name)) {
-        const cls = this.getResourceByName(name);
-        return new cls();
-      } else {
-        return undefined;
-      }
-    });
-    this._logger("building", target.name, "with args", args);
-    return new target(...args);
+    if (injectServices) {
+      const args = injectServices.map((name: string) => {
+        if (this._resources.has(name)) {
+          const cls = this.getResourceByName(name);
+          return new cls();
+        } else {
+          return undefined;
+        }
+      });
+      this._logger("building", target.name, "with args", args);
+      return new target(...args);
+    } else {
+      return new target();
+    }
   }
 
   public addResources(resources: { [key: string]: any }) {
