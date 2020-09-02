@@ -11,6 +11,8 @@ class LisseApp extends const_1.Base {
         servicePaths: []
     }) {
         super("lisse:application");
+        this._beforeRoutesInjectMiddlewares = [];
+        this._afterRoutesInjectMiddlewares = [];
         this._app = new Koa();
         if (option.apiLogger) {
             this._app.use(logger());
@@ -25,7 +27,20 @@ class LisseApp extends const_1.Base {
         this._errHandler = cb;
         return this;
     }
+    beforeRoutesInjectHook() {
+        for (let mid of this._beforeRoutesInjectMiddlewares) {
+            this._app.use(mid);
+            this._logger("koa middleware", mid.name, "injected");
+        }
+    }
+    afterRoutesInjectHook() {
+        for (let mid of this._afterRoutesInjectMiddlewares) {
+            this._app.use(mid);
+            this._logger("koa middleware", mid.name, "injected");
+        }
+    }
     start() {
+        this.beforeRoutesInjectHook();
         this._app.use(async (ctx, next) => {
             try {
                 await next();
@@ -42,6 +57,7 @@ class LisseApp extends const_1.Base {
         this._app.use(router.routes());
         this._app.use(router.allowedMethods());
         this._logger("view router inject to application done ...");
+        this.afterRoutesInjectHook();
         return this;
     }
     listen(port = 3000) {
@@ -49,10 +65,10 @@ class LisseApp extends const_1.Base {
         return this._app.listen(port);
     }
     useBeforeRoutesInject(middleware) {
-        this._app.use(middleware);
+        this._beforeRoutesInjectMiddlewares.push(middleware);
     }
     useAfterRoutesInject(middleware) {
-        this._app.use(middleware);
+        this._afterRoutesInjectMiddlewares.push(middleware);
     }
 }
 exports.LisseApp = LisseApp;

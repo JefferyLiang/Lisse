@@ -17,6 +17,8 @@ export class LisseApp extends Base {
   private viewResource: ViewResource;
   private serviceResource: ServiceResource;
   private _errHandler: (err: LisseError | Error, ctx: Koa.Context) => void;
+  private _beforeRoutesInjectMiddlewares: Koa.Middleware[] = [];
+  private _afterRoutesInjectMiddlewares: Koa.Middleware[] = [];
 
   get errHandler() {
     return this._errHandler || undefined;
@@ -44,7 +46,22 @@ export class LisseApp extends Base {
     return this;
   }
 
+  private beforeRoutesInjectHook() {
+    for (let mid of this._beforeRoutesInjectMiddlewares) {
+      this._app.use(mid);
+      this._logger("koa middleware", mid.name, "injected");
+    }
+  }
+
+  private afterRoutesInjectHook() {
+    for (let mid of this._afterRoutesInjectMiddlewares) {
+      this._app.use(mid);
+      this._logger("koa middleware", mid.name, "injected");
+    }
+  }
+
   public start() {
+    this.beforeRoutesInjectHook();
     this._app.use(async (ctx, next) => {
       try {
         await next();
@@ -62,6 +79,7 @@ export class LisseApp extends Base {
     this._app.use(router.routes());
     this._app.use(router.allowedMethods());
     this._logger("view router inject to application done ...");
+    this.afterRoutesInjectHook();
     return this;
   }
 
@@ -71,10 +89,10 @@ export class LisseApp extends Base {
   }
 
   public useBeforeRoutesInject(middleware: Koa.Middleware) {
-    this._app.use(middleware);
+    this._beforeRoutesInjectMiddlewares.push(middleware);
   }
 
   public useAfterRoutesInject(middleware: Koa.Middleware) {
-    this._app.use(middleware);
+    this._afterRoutesInjectMiddlewares.push(middleware);
   }
 }
