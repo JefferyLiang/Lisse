@@ -69,4 +69,12 @@ export class LisseApp extends Base {
     this._app.listen(port);
     return this;
   }
+
+  public useBeforeRoutesInject(middleware: Koa.Middleware) {
+    this._app.use(middleware);
+  }
+
+  public useAfterRoutesInject(middleware: Koa.Middleware) {
+    this._app.use(middleware);
+  }
 }

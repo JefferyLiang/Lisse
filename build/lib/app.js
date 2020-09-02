@@ -49,6 +49,12 @@ class LisseApp extends const_1.Base {
         this._app.listen(port);
         return this;
     }
+    useBeforeRoutesInject(middleware) {
+        this._app.use(middleware);
+    }
+    useAfterRoutesInject(middleware) {
+        this._app.use(middleware);
+    }
 }
 exports.LisseApp = LisseApp;
 //# sourceMappingURL=app.js.map
