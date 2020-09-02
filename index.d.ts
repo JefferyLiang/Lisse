@@ -1,8 +1,8 @@
 import { LisseApp as _LisseApp, LisseError as _LisseError } from "./src/index";
 
 declare namespace lisse {
-  export const LisseApp: _LisseApp;
-  export const LisseError: _LisseError;
+  export class LisseApp extends _LisseApp {}
+  export class LisseError extends _LisseError {}
   export function View(prefix: string): ClassDecorator;
   export function Get(path: string): MethodDecorator;
   export function Put(path: string): MethodDecorator;
