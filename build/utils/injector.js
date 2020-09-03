@@ -17,10 +17,17 @@ class Injector {
             const args = injectServices.map((name) => {
                 if (this._resources.has(name)) {
                     const cls = this.getResourceByName(name);
-                    return new cls();
+                    if (Reflect.getMetadata(LISSE_INJECTABLE, cls) &&
+                        cls.name !== target.name) {
+                        return this.injectAndBuildInstance(cls);
+                    }
+                    else if (cls.name !== target.name) {
+                        return new cls();
+                    }
+                    throw EvalError(`Can not inject ${name} service into ${name}`);
                 }
                 else {
-                    return undefined;
+                    throw EvalError(`Can not find inject service ${name}`);
                 }
             });
             this._logger("building", target.name, "with args", args);

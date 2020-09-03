@@ -24,6 +24,10 @@ export class LisseApp extends Base {
     return this._errHandler || undefined;
   }
 
+  get koa() {
+    return this._app;
+  }
+
   constructor(
     option: LissAppOption = {
       viewPaths: [],

@@ -23,6 +23,9 @@ class LisseApp extends const_1.Base {
     get errHandler() {
         return this._errHandler || undefined;
     }
+    get koa() {
+        return this._app;
+    }
     setErrorHandler(cb) {
         this._errHandler = cb;
         return this;
