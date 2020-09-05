@@ -43,7 +43,6 @@ class LisseApp extends const_1.Base {
         }
     }
     start() {
-        this.beforeRoutesInjectHook();
         this._app.use(async (ctx, next) => {
             try {
                 await next();
@@ -54,6 +53,7 @@ class LisseApp extends const_1.Base {
                     : ctx.app.emit("error", err, ctx);
             }
         });
+        this.beforeRoutesInjectHook();
         this.serviceResource.load();
         this.viewResource.load();
         let router = this.viewResource.build();
