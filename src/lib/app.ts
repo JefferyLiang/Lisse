@@ -65,7 +65,6 @@ export class LisseApp extends Base {
   }
 
   public start() {
-    this.beforeRoutesInjectHook();
     this._app.use(async (ctx, next) => {
       try {
         await next();
@@ -75,6 +74,7 @@ export class LisseApp extends Base {
           : ctx.app.emit("error", err, ctx);
       }
     });
+    this.beforeRoutesInjectHook();
     // services
     this.serviceResource.load();
     // views
