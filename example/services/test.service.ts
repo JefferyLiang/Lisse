@@ -1,11 +1,13 @@
-import { Service, Injectable } from "../../src";
+import { Injectable, Inject } from "../../src";
+import { Test1Service } from "./test1.service";
 
-@Service()
-@Injectable("Test1Service")
+@Injectable()
 export class TestService {
+  @Inject() public test1: Test1Service;
+
   public date: Date;
 
-  constructor(public test1: any, public test2: any) {
+  constructor() {
     this.date = new Date();
   }
 }

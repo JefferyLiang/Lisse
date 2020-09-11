@@ -2,9 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 const debug = require("debug");
-const resource_1 = require("./resource");
+const loader_1 = require("../utils/loader");
 const Router = require("koa-router");
-const injector_1 = require("../utils/injector");
 exports.VIEW_PREFIX = Symbol("VIEW_PREFIX");
 exports.VIEW_PATH = Symbol("VIEW_PATH");
 exports.VIEW_METHOD = Symbol("VIEW_METHOD");
@@ -31,21 +30,22 @@ function isRestFunction(fn) {
     return (Reflect.getMetadata(exports.VIEW_PATH, fn) !== undefined &&
         Reflect.getMetadata(exports.VIEW_METHOD, fn) !== undefined);
 }
-class ViewResource extends resource_1.Resource {
+class ViewResource {
     constructor(viewResourcePaths) {
-        super(viewResourcePaths);
         this._views = [];
-        this._injector = injector_1.injector;
+        this.resources = new Map();
+        this.paths = viewResourcePaths;
         this._logger = debug("lisse:resource:view");
+        this.loader = new loader_1.Loader();
     }
     get views() {
         return this._views;
     }
     mapRoutes() {
         let routes = [];
-        for (let resourceName in this._resources) {
-            const cls = this._resources[resourceName];
-            const instance = this._injector.injectAndBuildInstance(cls);
+        for (let resourceName of this.resources.keys()) {
+            const cls = this.resources.get(resourceName);
+            const instance = new cls();
             const prototype = Object.getPrototypeOf(instance);
             const methodNames = Object.getOwnPropertyNames(prototype).filter(item => isRestFunction(prototype[item]) && !isConstructor(item));
             const PREFIX = Reflect.getMetadata(exports.VIEW_PREFIX, cls);
@@ -65,21 +65,26 @@ class ViewResource extends resource_1.Resource {
         }
     }
     _loadResources() {
-        let _resources = {};
         this._logger("view resources loading ...");
-        for (let _module of this._loader.modules) {
+        for (let _module of this.loader.modules) {
             for (let key in _module) {
                 if (Reflect.getMetadata(exports.VIEW_PREFIX, _module[key])) {
-                    this._logger("Loaded view module", key);
-                    _resources[key] = _module[key];
+                    if (!this.resources.has(key)) {
+                        this._logger("Loaded view module", key);
+                        this.resources.set(key, _module[key]);
+                    }
                 }
             }
         }
         this._logger("view resources loaded ...");
-        return _resources;
     }
     _afterLoadResource() {
         this.mapRoutes();
+    }
+    load() {
+        this.loader.loadFileModules(this.paths);
+        this._loadResources();
+        this._afterLoadResource();
     }
     build() {
         this._logger("view router building ...");

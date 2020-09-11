@@ -9,8 +9,8 @@ declare namespace lisse {
   export function Post(path: string): MethodDecorator;
   export function Delete(path: string): MethodDecorator;
   export function Patch(path: string): MethodDecorator;
-  export function Service(): ClassDecorator;
-  export function Injectable(...args: string[]): ClassDecorator;
+  export function Injectable(): ClassDecorator;
+  export function Inject(): PropertyDecorator;
 }
 
 export = lisse;

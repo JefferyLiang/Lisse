@@ -1,13 +1,11 @@
 import { Base } from "../utils/const";
 import { ViewResource } from "./view";
-import { ServiceResource } from "./service";
 import { LisseError } from "../utils/error";
 import * as Koa from "koa";
 import * as logger from "koa-logger";
 
 interface LissAppOption {
   viewPaths: string[];
-  servicePaths: string[];
   apiLogger?: boolean;
   timeout?: number;
 }
@@ -15,7 +13,7 @@ interface LissAppOption {
 export class LisseApp extends Base {
   private _app: Koa;
   private viewResource: ViewResource;
-  private serviceResource: ServiceResource;
+  // private serviceResource: ServiceResource;
   private _errHandler: (err: LisseError | Error, ctx: Koa.Context) => void;
   private _beforeRoutesInjectMiddlewares: Koa.Middleware[] = [];
   private _afterRoutesInjectMiddlewares: Koa.Middleware[] = [];
@@ -30,8 +28,7 @@ export class LisseApp extends Base {
 
   constructor(
     option: LissAppOption = {
-      viewPaths: [],
-      servicePaths: []
+      viewPaths: []
     }
   ) {
     super("lisse:application");
@@ -40,7 +37,7 @@ export class LisseApp extends Base {
       this._app.use(logger());
     }
     this.viewResource = new ViewResource(option.viewPaths);
-    this.serviceResource = new ServiceResource(option.servicePaths);
+    // this.serviceResource = new ServiceResource(option.servicePaths);
   }
 
   public setErrorHandler(
@@ -76,7 +73,7 @@ export class LisseApp extends Base {
     });
     this.beforeRoutesInjectHook();
     // services
-    this.serviceResource.load();
+    // this.serviceResource.load();
     // views
     this.viewResource.load();
     let router = this.viewResource.build();

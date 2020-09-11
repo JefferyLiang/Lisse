@@ -1,6 +1,6 @@
-import { Service } from "../../src";
+import { Injectable } from "../../src";
 
-@Service()
+@Injectable()
 export class Test1Service {
   public date: Date;
 

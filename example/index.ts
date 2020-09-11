@@ -4,7 +4,7 @@ import * as bodyParser from "koa-bodyparser";
 
 const app = new LisseApp({
   viewPaths: [path.join(__dirname, "./views")],
-  servicePaths: [path.join(__dirname, "./services")],
+  // servicePaths: [path.join(__dirname, "./services")],
   apiLogger: true
 });
 

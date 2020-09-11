@@ -1,58 +1,47 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const debug_1 = require("debug");
-require("reflect-metadata");
-const LISSE_INJECTABLE = Symbol("LISSE_INJECTABLE");
 class Injector {
     constructor() {
-        this._resources = new Map();
+        this.providerMap = new Map();
+        this.instanceMap = new Map();
         this._logger = debug_1.default("lisse:injector");
     }
-    get size() {
-        return this._resources.size;
-    }
-    injectAndBuildInstance(target) {
-        let injectServices = Reflect.getMetadata(LISSE_INJECTABLE, target);
-        if (injectServices) {
-            const args = injectServices.map((name) => {
-                if (this._resources.has(name)) {
-                    const cls = this.getResourceByName(name);
-                    if (Reflect.getMetadata(LISSE_INJECTABLE, cls) &&
-                        cls.name !== target.name) {
-                        return this.injectAndBuildInstance(cls);
-                    }
-                    else if (cls.name !== target.name) {
-                        return new cls();
-                    }
-                    throw EvalError(`Can not inject ${name} service into ${name}`);
-                }
-                else {
-                    throw EvalError(`Can not find inject service ${name}`);
-                }
-            });
-            this._logger("building", target.name, "with args", args);
-            return new target(...args);
-        }
-        else {
-            return new target();
+    setProvider(key, value) {
+        if (!this.providerMap.has(key)) {
+            this._logger("Set provider key", key, "value:", value);
+            this.providerMap.set(key, value);
         }
     }
-    addResources(resources) {
-        for (let key in resources) {
-            this._resources.set(key, resources[key]);
+    getProvider(key) {
+        return this.providerMap.get(key);
+    }
+    setInstance(key, value) {
+        if (this.instanceMap.has(key)) {
+            this._logger("Set up instance", key);
+            this.instanceMap.set(key, value);
         }
     }
-    getResourceByName(name) {
-        if (this._resources.has(name)) {
-            return this._resources.get(name);
-        }
-        else {
-            throw new Error(`Can not find resource ${name}`);
-        }
+    getInstance(key) {
+        return this.instanceMap.get(key);
     }
 }
-exports.Injectable = (...args) => target => {
-    Reflect.defineMetadata(LISSE_INJECTABLE, args, target);
-};
+exports.Injector = Injector;
 exports.injector = new Injector();
+exports.Injectable = () => (target) => {
+    exports.injector.setProvider(target, target);
+    return target;
+};
+exports.Inject = () => (target, propertyKey) => {
+    const propertyType = Reflect.getMetadata("design:type", target, propertyKey);
+    const _injector = exports.injector;
+    let providerInsntance = _injector.getInstance(propertyType);
+    if (!providerInsntance) {
+        let providerClass = _injector.getProvider(propertyType);
+        providerInsntance = new providerClass();
+        exports.injector.setInstance(propertyType, providerInsntance);
+    }
+    target[propertyKey] = providerInsntance;
+    return target[propertyKey];
+};
 //# sourceMappingURL=injector.js.map

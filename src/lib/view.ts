@@ -1,10 +1,9 @@
 import "reflect-metadata";
 import * as debug from "debug";
-import { Resource } from "./resource";
+import { Loader } from "../utils/loader";
 import { ROUTER_METHOD } from "../utils/const";
 import { Context, Next } from "koa";
 import * as Router from "koa-router";
-import { injector } from "../utils/injector";
 
 interface LisseViewMap {
   path: string;
@@ -47,26 +46,29 @@ function isRestFunction(fn: Function): boolean {
   );
 }
 
-export class ViewResource extends Resource {
+export class ViewResource {
   private _logger: debug.Debugger;
   private _views: LisseViewMap[] = [];
-  private _injector = injector;
+  private loader: Loader;
+  private paths: string[];
+  private resources: Map<string, any> = new Map();
 
   get views() {
     return this._views;
   }
 
   constructor(viewResourcePaths: string[]) {
-    super(viewResourcePaths);
+    this.paths = viewResourcePaths;
     this._logger = debug("lisse:resource:view");
+    this.loader = new Loader();
   }
 
   private mapRoutes() {
     let routes: LisseViewMap[] = [];
-    for (let resourceName in this._resources) {
-      const cls = this._resources[resourceName];
+    for (let resourceName of this.resources.keys()) {
+      const cls = this.resources.get(resourceName);
       // get view class instance
-      const instance = this._injector.injectAndBuildInstance(cls);
+      const instance = new cls();
       // get prototype
       const prototype = Object.getPrototypeOf(instance);
       // get method name string array and filter
@@ -95,22 +97,28 @@ export class ViewResource extends Resource {
   }
 
   _loadResources() {
-    let _resources: { [key: string]: NodeRequire } = {};
     this._logger("view resources loading ...");
-    for (let _module of this._loader.modules) {
+    for (let _module of this.loader.modules) {
       for (let key in _module) {
         if (Reflect.getMetadata(VIEW_PREFIX, _module[key])) {
-          this._logger("Loaded view module", key);
-          _resources[key] = _module[key];
+          if (!this.resources.has(key)) {
+            this._logger("Loaded view module", key);
+            this.resources.set(key, _module[key]);
+          }
         }
       }
     }
     this._logger("view resources loaded ...");
-    return _resources;
   }
 
   _afterLoadResource() {
     this.mapRoutes();
+  }
+
+  public load() {
+    this.loader.loadFileModules(this.paths);
+    this._loadResources();
+    this._afterLoadResource();
   }
 
   public build(): Router {

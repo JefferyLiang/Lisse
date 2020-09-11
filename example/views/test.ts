@@ -1,19 +1,15 @@
-import { View, Get, Injectable, LisseError, Post } from "../../src";
+import { View, Get, LisseError, Post, Inject } from "../../src";
 import { Context } from "koa";
+import { TestService } from "../services/test.service";
 
 @View("/api/tester")
-@Injectable("TestService")
 export class TesterView {
-  constructor(public test_service: any) {
-    this.test_service = test_service;
-  }
+  @Inject() public testService: TestService;
 
   @Get("")
   public hello(ctx: Context) {
-    ctx.body = {
-      test: this.test_service.date,
-      test1: this.test_service.test1.date
-    };
+    console.log(this.testService.date);
+    ctx.body = "hello";
   }
 
   @Get("/error")

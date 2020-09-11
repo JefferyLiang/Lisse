@@ -2,13 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const const_1 = require("../utils/const");
 const view_1 = require("./view");
-const service_1 = require("./service");
 const Koa = require("koa");
 const logger = require("koa-logger");
 class LisseApp extends const_1.Base {
     constructor(option = {
-        viewPaths: [],
-        servicePaths: []
+        viewPaths: []
     }) {
         super("lisse:application");
         this._beforeRoutesInjectMiddlewares = [];
@@ -18,7 +16,6 @@ class LisseApp extends const_1.Base {
             this._app.use(logger());
         }
         this.viewResource = new view_1.ViewResource(option.viewPaths);
-        this.serviceResource = new service_1.ServiceResource(option.servicePaths);
     }
     get errHandler() {
         return this._errHandler || undefined;
@@ -54,7 +51,6 @@ class LisseApp extends const_1.Base {
             }
         });
         this.beforeRoutesInjectHook();
-        this.serviceResource.load();
         this.viewResource.load();
         let router = this.viewResource.build();
         this._app.use(router.routes());
