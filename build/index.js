@@ -14,4 +14,7 @@ exports.Injectable = injector_1.Injectable;
 exports.Inject = injector_1.Inject;
 const error_1 = require("./utils/error");
 exports.LisseError = error_1.LisseError;
+const slot_1 = require("./lib/slot");
+exports.LisseSlot = slot_1.LisseSlot;
+exports.LisseDatabaseSlot = slot_1.LisseDatabaseSlot;
 //# sourceMappingURL=index.js.map

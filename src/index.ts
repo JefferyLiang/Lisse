@@ -2,6 +2,7 @@ import { LisseApp } from "./lib/app";
 import { View, Get, Put, Post, Patch, Delete } from "./lib/view";
 import { Injectable, Inject } from "./utils/injector";
 import { LisseError } from "./utils/error";
+import { LisseSlot, LisseDatabaseSlot } from "./lib/slot";
 
 export {
   LisseApp,
@@ -13,5 +14,7 @@ export {
   Patch,
   Injectable,
   Inject,
-  LisseError
+  LisseError,
+  LisseSlot,
+  LisseDatabaseSlot
 };

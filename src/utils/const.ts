@@ -1,5 +1,7 @@
 import debug from "debug";
 
+export type Constructor<T = {}> = new (...args: any[]) => T;
+
 export class Base {
   protected _logger: debug.Debugger;
 

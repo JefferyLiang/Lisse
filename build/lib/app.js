@@ -11,6 +11,7 @@ class LisseApp extends const_1.Base {
         super("lisse:application");
         this._beforeRoutesInjectMiddlewares = [];
         this._afterRoutesInjectMiddlewares = [];
+        this.slots = new Map();
         this._app = new Koa();
         if (option.apiLogger) {
             this._app.use(logger());
@@ -50,6 +51,7 @@ class LisseApp extends const_1.Base {
                     : ctx.app.emit("error", err, ctx);
             }
         });
+        this.runSlots();
         this.beforeRoutesInjectHook();
         this.viewResource.load();
         let router = this.viewResource.build();
@@ -68,6 +70,17 @@ class LisseApp extends const_1.Base {
     }
     useAfterRoutesInject(middleware) {
         this._afterRoutesInjectMiddlewares.push(middleware);
+    }
+    addSlot(slot) {
+        this.slots.set(slot.name, slot);
+    }
+    runSlots() {
+        for (let slot of this.slots.values()) {
+            if (slot !== undefined) {
+                this._logger("Slot", slot.name, "start");
+                new slot().start();
+            }
+        }
     }
 }
 exports.LisseApp = LisseApp;

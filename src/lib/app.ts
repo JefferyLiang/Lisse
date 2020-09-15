@@ -1,6 +1,7 @@
-import { Base } from "../utils/const";
+import { Base, Constructor } from "../utils/const";
 import { ViewResource } from "./view";
 import { LisseError } from "../utils/error";
+import { LisseSlot } from "./slot";
 import * as Koa from "koa";
 import * as logger from "koa-logger";
 
@@ -17,6 +18,7 @@ export class LisseApp extends Base {
   private _errHandler: (err: LisseError | Error, ctx: Koa.Context) => void;
   private _beforeRoutesInjectMiddlewares: Koa.Middleware[] = [];
   private _afterRoutesInjectMiddlewares: Koa.Middleware[] = [];
+  public slots: Map<string, Constructor<LisseSlot>> = new Map();
 
   get errHandler() {
     return this._errHandler || undefined;
@@ -71,9 +73,8 @@ export class LisseApp extends Base {
           : ctx.app.emit("error", err, ctx);
       }
     });
+    this.runSlots();
     this.beforeRoutesInjectHook();
-    // services
-    // this.serviceResource.load();
     // views
     this.viewResource.load();
     let router = this.viewResource.build();
@@ -95,5 +96,18 @@ export class LisseApp extends Base {
 
   public useAfterRoutesInject(middleware: Koa.Middleware) {
     this._afterRoutesInjectMiddlewares.push(middleware);
+  }
+
+  public addSlot(slot: Constructor<LisseSlot>) {
+    this.slots.set(slot.name, slot);
+  }
+
+  public runSlots() {
+    for (let slot of this.slots.values()) {
+      if (slot !== undefined) {
+        this._logger("Slot", slot.name, "start");
+        new slot().start();
+      }
+    }
   }
 }
