@@ -3,6 +3,7 @@ import { View, Get, Put, Post, Patch, Delete } from "./lib/view";
 import { Injectable, Inject } from "./utils/injector";
 import { LisseError } from "./utils/error";
 import { LisseSlot, LisseDatabaseSlot } from "./lib/slot";
+import { InjectorProxy } from "./lib/proxy";
 
 export {
   LisseApp,
@@ -16,5 +17,6 @@ export {
   Inject,
   LisseError,
   LisseSlot,
-  LisseDatabaseSlot
+  LisseDatabaseSlot,
+  InjectorProxy
 };

@@ -17,4 +17,6 @@ exports.LisseError = error_1.LisseError;
 const slot_1 = require("./lib/slot");
 exports.LisseSlot = slot_1.LisseSlot;
 exports.LisseDatabaseSlot = slot_1.LisseDatabaseSlot;
+const proxy_1 = require("./lib/proxy");
+exports.InjectorProxy = proxy_1.InjectorProxy;
 //# sourceMappingURL=index.js.map

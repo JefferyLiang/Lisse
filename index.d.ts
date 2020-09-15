@@ -2,7 +2,8 @@ import {
   LisseApp as _LisseApp,
   LisseError as _LisseError,
   LisseSlot as _LisseSlot,
-  LisseDatabaseSlot as _LisseDatabaseSlot
+  LisseDatabaseSlot as _LisseDatabaseSlot,
+  InjectorProxy as _InjectorProxy
 } from "./src/index";
 
 declare namespace lisse {
@@ -10,6 +11,7 @@ declare namespace lisse {
   export class LisseError extends _LisseError {}
   export abstract class LisseSlot extends _LisseSlot {}
   export abstract class LisseDatabaseSlot extends _LisseDatabaseSlot {}
+  export class InjectorProxy extends _InjectorProxy {}
   export function View(prefix: string): ClassDecorator;
   export function Get(path: string): MethodDecorator;
   export function Put(path: string): MethodDecorator;
