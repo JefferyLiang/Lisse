@@ -9,7 +9,7 @@ class Injector {
     }
     setProvider(key, value) {
         if (!this.providerMap.has(key)) {
-            this._logger("Set provider key", key, "value:", value);
+            this._logger("Set provider key", key.name);
             this.providerMap.set(key, value);
         }
     }
@@ -17,8 +17,8 @@ class Injector {
         return this.providerMap.get(key);
     }
     setInstance(key, value) {
-        if (this.instanceMap.has(key)) {
-            this._logger("Set up instance", key);
+        if (!this.instanceMap.has(key)) {
+            this._logger("Set up instance", key.name);
             this.instanceMap.set(key, value);
         }
     }
