@@ -4,6 +4,7 @@ import { LisseError } from "../utils/error";
 import { LisseSlot } from "./slot";
 import * as Koa from "koa";
 import * as logger from "koa-logger";
+import { injector } from "../utils/injector";
 
 interface LissAppOption {
   viewPaths: string[];
@@ -73,7 +74,7 @@ export class LisseApp extends Base {
           : ctx.app.emit("error", err, ctx);
       }
     });
-    this.runSlots();
+    this.runSlotsStart();
     this.beforeRoutesInjectHook();
     // views
     this.viewResource.load();
@@ -102,11 +103,14 @@ export class LisseApp extends Base {
     this.slots.set(slot.name, slot);
   }
 
-  public runSlots() {
+  private runSlotsStart() {
     for (let slot of this.slots.values()) {
       if (slot !== undefined) {
         this._logger("Slot", slot.name, "start");
-        new slot().start();
+        injector.setProvider(slot, slot);
+        let instance = new slot();
+        injector.setInstance(slot, instance);
+        instance.start();
       }
     }
   }

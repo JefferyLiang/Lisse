@@ -4,6 +4,7 @@ const const_1 = require("../utils/const");
 const view_1 = require("./view");
 const Koa = require("koa");
 const logger = require("koa-logger");
+const injector_1 = require("../utils/injector");
 class LisseApp extends const_1.Base {
     constructor(option = {
         viewPaths: []
@@ -51,7 +52,7 @@ class LisseApp extends const_1.Base {
                     : ctx.app.emit("error", err, ctx);
             }
         });
-        this.runSlots();
+        this.runSlotsStart();
         this.beforeRoutesInjectHook();
         this.viewResource.load();
         let router = this.viewResource.build();
@@ -74,11 +75,14 @@ class LisseApp extends const_1.Base {
     addSlot(slot) {
         this.slots.set(slot.name, slot);
     }
-    runSlots() {
+    runSlotsStart() {
         for (let slot of this.slots.values()) {
             if (slot !== undefined) {
                 this._logger("Slot", slot.name, "start");
-                new slot().start();
+                injector_1.injector.setProvider(slot, slot);
+                let instance = new slot();
+                injector_1.injector.setInstance(slot, instance);
+                instance.start();
             }
         }
     }
